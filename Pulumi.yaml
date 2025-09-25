@@ -1,0 +1,6 @@
+name: multicloud-vm
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+description: A reusable Pulumi package for creating EC2 instances with configurable parameters

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multicloud-vm"
+version = "1.0.0"
+description = "A reusable Pulumi package for creating EC2 instances with configurable parameters"
+authors = [
+    {name = "SarwanKumar", email = "ksarwan47@gmail.com"}
+]
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "pulumi>=3.0.0,<4.0.0",
+    "pulumi-aws>=6.0.0,<7.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/sarwan111/multicloud-vm"
+Repository = "https://github.com/sarwan111/multicloud-vm"
+Issues = "https://github.com/sarwan111/multicloud-vm/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+exclude = ["tests*"]
