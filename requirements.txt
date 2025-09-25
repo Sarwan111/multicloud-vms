@@ -1,2 +1,4 @@
 pulumi>=3.0.0,<4.0.0
 pulumi-aws>=6.0.0,<7.0.0
+pulumi-azure>=5.0.0,<6.0.0
+git+https://github.com/Sarwan111/multicloud-vms.git
