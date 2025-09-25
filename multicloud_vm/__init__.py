@@ -1,26 +1,51 @@
 import pulumi
 import pulumi_aws as aws
-from typing import Optional
+from typing import Optional, Dict, Any
+
+class AWSConfig:
+    """Configuration class for AWS EC2 instances."""
+    def __init__(self, 
+                 instance_size: str = "t3.micro",
+                 region: str = "us-east-1", 
+                 os_image: Optional[str] = None,
+                 tags: Optional[Dict[str, str]] = None):
+        self.instance_size = instance_size
+        self.region = region
+        self.os_image = os_image
+        self.tags = tags or {}
 
 class EC2Instance:
     def __init__(self, 
-                 instance_size: str = "t3.micro",
-                 region: str = "us-east-1",
-                 os_image: Optional[str] = None,  # Make this optional
                  name: Optional[str] = None,
+                 config: Optional[AWSConfig] = None,
+                 instance_size: Optional[str] = None,
+                 region: Optional[str] = None,
+                 os_image: Optional[str] = None,
                  aws_provider: Optional[aws.Provider] = None,
-                 resource_prefix: str = "multicloud-vm"):  # Add resource prefix parameter
+                 resource_prefix: str = "multicloud-vm"):
         """
         Create an EC2 instance with configurable parameters.
         
         Args:
-            instance_size: The EC2 instance type (e.g., t3.micro, t3.small, etc.)
-            region: The AWS region to deploy the instance
-            os_image: The AMI ID for the operating system (if not provided, uses latest Amazon Linux 2)
-            name: Optional name for the instance (defaults to auto-generated)
+            name: Name for the instance
+            config: AWSConfig object with configuration parameters
+            instance_size: The EC2 instance type (e.g., t3.micro, t3.small, etc.) - overrides config
+            region: The AWS region to deploy the instance - overrides config
+            os_image: The AMI ID for the operating system - overrides config
             aws_provider: Optional AWS provider (if not provided, creates one)
             resource_prefix: Prefix for resource names to avoid conflicts
         """
+        
+        # Use config object if provided, otherwise use individual parameters
+        if config:
+            instance_size = instance_size or config.instance_size
+            region = region or config.region
+            os_image = os_image or config.os_image
+            tags = config.tags
+        else:
+            instance_size = instance_size or "t3.micro"
+            region = region or "us-east-1"
+            tags = {}
         
         # Use provided provider or create a new one
         if aws_provider is None:
@@ -83,16 +108,20 @@ class EC2Instance:
         # Create the EC2 instance with unique name
         instance_name = name or f"{resource_prefix}-{pulumi.get_stack()}"
         
+        # Merge tags from config with default tags
+        instance_tags = {
+            "Name": instance_name,
+            "Project": resource_prefix,
+            "Environment": pulumi.get_stack()
+        }
+        instance_tags.update(tags)
+        
         self.instance = aws.ec2.Instance(
             f"{resource_prefix}-instance",
             ami=os_image,
             instance_type=instance_size,
             vpc_security_group_ids=[security_group.id],
-            tags={
-                "Name": instance_name,
-                "Project": resource_prefix,
-                "Environment": pulumi.get_stack()
-            },
+            tags=instance_tags,
             opts=pulumi.ResourceOptions(provider=aws_provider)
         )
         
