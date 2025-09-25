@@ -140,4 +140,5 @@ Both AWS and Azure implementations automatically create security configurations:
 - Virtual network and subnet creation
 - Public IP assignment
 
+> **Note:** This package and its configurations are intended for demo purposes only. Do not use default credentials or configurations in production environments.
 
